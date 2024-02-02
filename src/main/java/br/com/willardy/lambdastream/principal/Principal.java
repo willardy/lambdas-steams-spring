@@ -54,7 +54,10 @@ public class Principal {
             temporadas.add(dadosTemporadaDto);
         }
 
-        temporadas.forEach(System.out::println);
+//        temporadas.forEach(System.out::println);
+
+        temporadas.forEach(temporada -> temporada.episodios().forEach(episodio -> System.out.println(episodio.titulo())));
+
         return temporadas;
     }
 
