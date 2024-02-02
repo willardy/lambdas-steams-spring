@@ -1,6 +1,8 @@
 package br.com.willardy.lambdastream;
 
+import br.com.willardy.lambdastream.dto.DadosSerieDto;
 import br.com.willardy.lambdastream.local.service.ConsumoAPIService;
+import br.com.willardy.lambdastream.local.service.ConverteDadosService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,10 +18,15 @@ public class LambdastreamApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        var consumoApi = new ConsumoAPIService();
-        var json = consumoApi.obterDados("https://www.omdbapi.com/?t=Transform&apikey=8d1c9917");
+        var consumoAPIService = new ConsumoAPIService();
+        var json = consumoAPIService.obterDados("https://www.omdbapi.com/?t=Supernatural&apikey=8d1c9917");
 
         Logger logger = Logger.getLogger(getClass().getName());
         logger.info(json);
+
+        var consumoDadosService = new ConverteDadosService();
+        DadosSerieDto dadosSerieDto = consumoDadosService.converteJsonParaClasse(json, DadosSerieDto.class);
+
+        logger.info(dadosSerieDto.toString());
     }
 }
