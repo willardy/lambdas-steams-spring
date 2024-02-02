@@ -7,6 +7,8 @@ import br.com.willardy.lambdastream.model.Episodio;
 import br.com.willardy.lambdastream.service.ConsumoAPIService;
 import br.com.willardy.lambdastream.service.ConverteDadosService;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -61,12 +63,10 @@ public class Principal {
         listarTodosEpisodios(temporadas);
 
 
-
-
         return temporadas;
     }
 
-    private void mostrarTop5Episodios(List<DadosTemporada> temporadas){
+    private void mostrarTop5Episodios(List<DadosTemporada> temporadas) {
         System.out.println("\n\nListando os TOP 5 episodios com maior avaliacao");
         List<DadosEpisodio> dadosEpisodioList = temporadas.stream()
                 .flatMap(t -> t.episodios().stream())
@@ -78,7 +78,7 @@ public class Principal {
         dadosEpisodioList.forEach(System.out::println);
     }
 
-    private void listarTodosEpisodios(List<DadosTemporada> temporadas){
+    private void listarTodosEpisodios(List<DadosTemporada> temporadas) {
         System.out.println("\n\nListando os Episodios");
         List<Episodio> episodios = temporadas.stream()
                 .flatMap(t -> t.episodios()
@@ -87,6 +87,22 @@ public class Principal {
                 .collect(Collectors.toList());
 
         episodios.forEach(System.out::println);
+
+        System.out.println("\n\nA partir de que ano você deseja ver os episódios? ");
+        var ano = leitura.nextInt();
+        leituraTeclado(); // Recurso usado para nao causar problemas com o nextInt();
+
+        LocalDate dataBusca = LocalDate.of(ano, 1, 1);
+
+        DateTimeFormatter formatadorDeData = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        episodios.stream()
+                .filter(e -> e.getDataLancamento() != null && e.getDataLancamento().isAfter(dataBusca))
+                .forEach(e -> System.out.println(
+                        "Temporada: " + e.getTemporada() +
+                                " Episódio: " + e.getNumeroEpisodio() +
+                                " Data Lançamento: " + e.getDataLancamento().format(formatadorDeData)
+                ));
+
     }
 
     private DadosEpisodio buscarSeriePorEpisodio(String nomeSerie, String temporada, String episodio) {
