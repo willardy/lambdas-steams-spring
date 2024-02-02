@@ -1,2 +1,1 @@
-# lambdas-steams-spring
-Trabalhando com Lambdas, Streams e Spring Framework
+# Streams, Lambdas e Spring Framework
