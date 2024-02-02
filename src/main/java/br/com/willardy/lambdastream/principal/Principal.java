@@ -3,6 +3,7 @@ package br.com.willardy.lambdastream.principal;
 import br.com.willardy.lambdastream.model.DadosEpisodio;
 import br.com.willardy.lambdastream.model.DadosSerie;
 import br.com.willardy.lambdastream.model.DadosTemporada;
+import br.com.willardy.lambdastream.model.Episodio;
 import br.com.willardy.lambdastream.service.ConsumoAPIService;
 import br.com.willardy.lambdastream.service.ConverteDadosService;
 
@@ -31,11 +32,11 @@ public class Principal {
         System.out.println("Listando todas as temporadas encontradas abaixo: ");
         buscarTodasTemporadasPorSerie(nomeSerie, dadosSerie.totalTemporadas());
 
-        System.out.print("Por favor digite o numero da Temporada que deseja buscar: ");
-        var numeroTemporada = leituraTeclado();
-        System.out.print("Por favor digite o numero do Episodio que deseja buscar: ");
-        var numeroEpisodio = leituraTeclado();
-        buscarSeriePorEpisodio(nomeSerie, numeroTemporada, numeroEpisodio);
+//        System.out.print("Por favor digite o numero da Temporada que deseja buscar: ");
+//        var numeroTemporada = leituraTeclado();
+//        System.out.print("Por favor digite o numero do Episodio que deseja buscar: ");
+//        var numeroEpisodio = leituraTeclado();
+//        buscarSeriePorEpisodio(nomeSerie, numeroTemporada, numeroEpisodio);
     }
 
     private DadosSerie buscarSeriePorTitulo(String nomeSerie) {
@@ -56,10 +57,16 @@ public class Principal {
             temporadas.add(dadosTemporada);
         }
 
-//        temporadas.forEach(System.out::println);
+        mostrarTop5Episodios(temporadas);
+        listarTodosEpisodios(temporadas);
 
-//        temporadas.forEach(temporada -> temporada.episodios().forEach(episodio -> System.out.println(episodio.titulo())));
 
+
+
+        return temporadas;
+    }
+
+    private void mostrarTop5Episodios(List<DadosTemporada> temporadas){
         System.out.println("\n\nListando os TOP 5 episodios com maior avaliacao");
         List<DadosEpisodio> dadosEpisodioList = temporadas.stream()
                 .flatMap(t -> t.episodios().stream())
@@ -69,8 +76,17 @@ public class Principal {
                 .collect(Collectors.toList());
 
         dadosEpisodioList.forEach(System.out::println);
+    }
 
-        return temporadas;
+    private void listarTodosEpisodios(List<DadosTemporada> temporadas){
+        System.out.println("\n\nListando os Episodios");
+        List<Episodio> episodios = temporadas.stream()
+                .flatMap(t -> t.episodios()
+                        .stream()
+                        .map(e -> new Episodio(t.temporada(), e)))
+                .collect(Collectors.toList());
+
+        episodios.forEach(System.out::println);
     }
 
     private DadosEpisodio buscarSeriePorEpisodio(String nomeSerie, String temporada, String episodio) {
