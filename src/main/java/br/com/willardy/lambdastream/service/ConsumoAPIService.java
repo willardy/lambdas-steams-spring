@@ -1,4 +1,4 @@
-package br.com.willardy.lambdastream.local.service;
+package br.com.willardy.lambdastream.service;
 
 import java.io.IOException;
 import java.net.URI;

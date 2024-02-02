@@ -1,4 +1,4 @@
-package br.com.willardy.lambdastream.local.service;
+package br.com.willardy.lambdastream.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package br.com.willardy.lambdastream.dto;
+package br.com.willardy.lambdastream.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record DadosTemporadaDto(
+public record DadosTemporada(
         @JsonProperty("Season") Integer temporada,
-        @JsonProperty("Episodes") List<DadosEpisodioDto> episodios) {
+        @JsonProperty("Episodes") List<DadosEpisodio> episodios) {
 }

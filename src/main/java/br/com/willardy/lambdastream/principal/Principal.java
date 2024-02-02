@@ -1,14 +1,16 @@
 package br.com.willardy.lambdastream.principal;
 
-import br.com.willardy.lambdastream.dto.DadosEpisodioDto;
-import br.com.willardy.lambdastream.dto.DadosSerieDto;
-import br.com.willardy.lambdastream.dto.DadosTemporadaDto;
-import br.com.willardy.lambdastream.local.service.ConsumoAPIService;
-import br.com.willardy.lambdastream.local.service.ConverteDadosService;
+import br.com.willardy.lambdastream.model.DadosEpisodio;
+import br.com.willardy.lambdastream.model.DadosSerie;
+import br.com.willardy.lambdastream.model.DadosTemporada;
+import br.com.willardy.lambdastream.service.ConsumoAPIService;
+import br.com.willardy.lambdastream.service.ConverteDadosService;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Principal {
     private final String URL = "https://www.omdbapi.com/?&t=";
@@ -24,10 +26,10 @@ public class Principal {
         System.out.print("Por favor digite o nome da serie que deseja buscar: ");
         String nomeSerie = leituraTeclado();
         nomeSerie = nomeSerie.replace(" ", "+");
-        DadosSerieDto dadosSerieDto = buscarSeriePorTitulo(nomeSerie);
+        DadosSerie dadosSerie = buscarSeriePorTitulo(nomeSerie);
 
         System.out.println("Listando todas as temporadas encontradas abaixo: ");
-        buscarTodasTemporadasPorSerie(nomeSerie, dadosSerieDto.totalTemporadas());
+        buscarTodasTemporadasPorSerie(nomeSerie, dadosSerie.totalTemporadas());
 
         System.out.print("Por favor digite o numero da Temporada que deseja buscar: ");
         var numeroTemporada = leituraTeclado();
@@ -36,38 +38,48 @@ public class Principal {
         buscarSeriePorEpisodio(nomeSerie, numeroTemporada, numeroEpisodio);
     }
 
-    private DadosSerieDto buscarSeriePorTitulo(String nomeSerie) {
+    private DadosSerie buscarSeriePorTitulo(String nomeSerie) {
         var jsonRetorno = consumoAPIService.obterDados(URL + nomeSerie + API_KEY);
 
-        DadosSerieDto dadosSerieDto = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosSerieDto.class);
+        DadosSerie dadosSerie = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosSerie.class);
 
-        System.out.println(dadosSerieDto);
-        return dadosSerieDto;
+        System.out.println(dadosSerie);
+        return dadosSerie;
     }
 
-    private List<DadosTemporadaDto> buscarTodasTemporadasPorSerie(String nomeSerie, Integer totalTemporadas) {
-        List<DadosTemporadaDto> temporadas = new ArrayList<>();
+    private List<DadosTemporada> buscarTodasTemporadasPorSerie(String nomeSerie, Integer totalTemporadas) {
+        List<DadosTemporada> temporadas = new ArrayList<>();
 
         for (Integer numeroTemporada = 1; numeroTemporada <= totalTemporadas; numeroTemporada++) {
             var jsonRetorno = consumoAPIService.obterDados(URL + nomeSerie + TEMPORADA + numeroTemporada + API_KEY);
-            DadosTemporadaDto dadosTemporadaDto = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosTemporadaDto.class);
-            temporadas.add(dadosTemporadaDto);
+            DadosTemporada dadosTemporada = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosTemporada.class);
+            temporadas.add(dadosTemporada);
         }
 
 //        temporadas.forEach(System.out::println);
 
-        temporadas.forEach(temporada -> temporada.episodios().forEach(episodio -> System.out.println(episodio.titulo())));
+//        temporadas.forEach(temporada -> temporada.episodios().forEach(episodio -> System.out.println(episodio.titulo())));
+
+        System.out.println("\n\nListando os TOP 5 episodios com maior avaliacao");
+        List<DadosEpisodio> dadosEpisodioList = temporadas.stream()
+                .flatMap(t -> t.episodios().stream())
+                .filter(e -> !e.avaliacao().equalsIgnoreCase("N/A"))
+                .sorted(Comparator.comparing(DadosEpisodio::avaliacao).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        dadosEpisodioList.forEach(System.out::println);
 
         return temporadas;
     }
 
-    private DadosEpisodioDto buscarSeriePorEpisodio(String nomeSerie, String temporada, String episodio) {
+    private DadosEpisodio buscarSeriePorEpisodio(String nomeSerie, String temporada, String episodio) {
         var jsonRetorno = consumoAPIService.obterDados(URL + nomeSerie + TEMPORADA + temporada + EPISODIO + episodio + API_KEY);
 
-        DadosEpisodioDto dadosEpisodioDto = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosEpisodioDto.class);
+        DadosEpisodio dadosEpisodio = converteDadosService.converteJsonParaClasse(jsonRetorno, DadosEpisodio.class);
 
-        System.out.println(dadosEpisodioDto);
-        return dadosEpisodioDto;
+        System.out.println(dadosEpisodio);
+        return dadosEpisodio;
     }
 
     private String leituraTeclado() {
