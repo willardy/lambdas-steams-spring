@@ -112,14 +112,26 @@ public class Principal {
 //                                " Data Lançamento: " + e.getDataLancamento().format(formatadorDeData)
 //                ));
 
-        Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
-                .filter(e -> e.getAvaliacao() > 0)
-                .collect(Collectors.groupingBy(
-                        Episodio::getTemporada,
-                        Collectors.averagingDouble(Episodio::getAvaliacao))
-                );
+//        Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
+//                .filter(e -> e.getAvaliacao() > 0)
+//                .collect(Collectors.groupingBy(
+//                        Episodio::getTemporada,
+//                        Collectors.averagingDouble(Episodio::getAvaliacao))
+//                );
+//
+//        System.out.println(avaliacoesPorTemporada);
 
-        System.out.println(avaliacoesPorTemporada);
+        DoubleSummaryStatistics est = episodios.stream()
+                .filter(e -> e.getAvaliacao() > 0)
+                .collect(Collectors.summarizingDouble(Episodio::getAvaliacao));
+
+        System.out.println(
+                "\n\nAvaliação dos episodios" +
+                "\nMédia: " + est.getAverage() +
+                "\nMelhor Episório: " + est.getMax() +
+                "\nPior Episório: " + est.getMin() +
+                "\nQuantidade de episodios avaliados: " + est.getCount()
+        );
 
         return episodios;
     }
