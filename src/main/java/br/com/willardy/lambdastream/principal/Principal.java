@@ -7,8 +7,6 @@ import br.com.willardy.lambdastream.model.Episodio;
 import br.com.willardy.lambdastream.service.ConsumoAPIService;
 import br.com.willardy.lambdastream.service.ConverteDadosService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,7 +73,7 @@ public class Principal {
         dadosEpisodioList.forEach(System.out::println);
     }
 
-    private void listarTodosEpisodios(List<DadosTemporada> temporadas) {
+    private List<Episodio> listarTodosEpisodios(List<DadosTemporada> temporadas) {
         System.out.println("\n\nListando os Episodios");
         List<Episodio> episodios = temporadas.stream()
 //                .peek(t -> System.out.println("Tempodarada " + t))
@@ -87,17 +85,17 @@ public class Principal {
 
         episodios.forEach(System.out::println);
 
-        System.out.print("Digite o trecho do titulo da serie que deseja buscar: ");
-        var buscaEpisodio = leituraTeclado();
-        Optional<Episodio> episodioBuscado = episodios.stream()
-                .filter(e -> e.getTitulo().toUpperCase().contains(buscaEpisodio.toUpperCase()))
-                .findFirst();
-
-        if(episodioBuscado.isPresent()){
-            System.out.println("Episodio encontrado na temporada "+ episodioBuscado.get().getTemporada());
-        }else{
-            System.out.println("Episodio nao encontrado!");
-        }
+//        System.out.print("Digite o trecho do titulo da serie que deseja buscar: ");
+//        var buscaEpisodio = leituraTeclado();
+//        Optional<Episodio> episodioBuscado = episodios.stream()
+//                .filter(e -> e.getTitulo().toUpperCase().contains(buscaEpisodio.toUpperCase()))
+//                .findFirst();
+//
+//        if(episodioBuscado.isPresent()){
+//            System.out.println("Episodio encontrado na temporada "+ episodioBuscado.get().getTemporada());
+//        }else{
+//            System.out.println("Episodio nao encontrado!");
+//        }
 
 //        System.out.println("\n\nA partir de que ano você deseja ver os episódios? ");
 //        var ano = leitura.nextInt();
@@ -114,6 +112,16 @@ public class Principal {
 //                                " Data Lançamento: " + e.getDataLancamento().format(formatadorDeData)
 //                ));
 
+        Map<Integer, Double> avaliacoesPorTemporada = episodios.stream()
+                .filter(e -> e.getAvaliacao() > 0)
+                .collect(Collectors.groupingBy(
+                        Episodio::getTemporada,
+                        Collectors.averagingDouble(Episodio::getAvaliacao))
+                );
+
+        System.out.println(avaliacoesPorTemporada);
+
+        return episodios;
     }
 
     private DadosEpisodio buscarSeriePorEpisodio(String nomeSerie, String temporada, String episodio) {
