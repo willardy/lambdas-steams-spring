@@ -81,9 +81,11 @@ public class Principal {
     private void listarTodosEpisodios(List<DadosTemporada> temporadas) {
         System.out.println("\n\nListando os Episodios");
         List<Episodio> episodios = temporadas.stream()
+                .peek(t -> System.out.println("Tempodarada " + t))
                 .flatMap(t -> t.episodios()
                         .stream()
                         .map(e -> new Episodio(t.temporada(), e)))
+                .peek(t -> System.out.println("Flat Map " + t))
                 .collect(Collectors.toList());
 
         episodios.forEach(System.out::println);
